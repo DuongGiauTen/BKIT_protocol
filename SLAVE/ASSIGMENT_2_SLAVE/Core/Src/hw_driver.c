@@ -7,6 +7,8 @@
 #include "hw_driver.h"
 #include "bkit_config.h"
 #include "main.h"
+#include "usart.h"
+#include "i2c.h"
 
 // --- CAC HAM CUA LAYER 1
 
