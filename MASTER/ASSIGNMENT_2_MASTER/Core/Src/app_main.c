@@ -15,11 +15,11 @@ bool bkit_send_message(const sensor_data_t* data) {
     // GOI XUONG LAYER 2
     if (bkit_protocol_send(data)) {
         // THEM LOG GUI THANH CONG O DAY
-    	lcd_show_string(10, 120, "GUI THANH CONG", GREEN, WHITE, 16, 0);
+    	//lcd_show_string(10, 200, "STATUS: SENDING OK  ", GREEN, BLACK, 24, 0);
         return true;
     } else {
         // XU LY LOI GUI
-    	lcd_show_string(10, 120, "GUI THAT BAI", RED, WHITE, 16, 0);
+    	//lcd_show_string(10, 200, "STATUS: SEND FAILED ", RED, BLACK, 24, 0);
     	// THEM LOG GUI THAT BAI O DAY
         return false;
     }
@@ -35,6 +35,7 @@ bool bkit_receive_message(sensor_data_t* data) {
     } else {
         /* XU LY LOI VA GHI LOG */
         // IN RA LOI "INVALID CRC" OR "CRC FAILED" O DAY
+
 
         return false;
     }

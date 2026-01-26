@@ -29,11 +29,11 @@ bool bkit_receive_message(sensor_data_t* data) {
     //GOI XUONG LAYER 2
     if (bkit_protocol_receive(data)) {
         // NEU NHAN THANH CONG VA CRC KHOP
-    	lcd_show_string(10, 120, "NHAN THANH CONG", GREEN, WHITE, 16, 0);
+    	lcd_show_string(10, 70,  "SIGNAL: EXCELLENT   ", GREEN, BLACK, 16, 0);
         return true;
     } else {
         /* XU LY LOI VA GHI LOG */
-    	lcd_show_string(10, 120, "NHAN THAT BAI", RED, WHITE, 16, 0);
+    	lcd_show_string(10, 70,  "SIGNAL: N/A   ", RED, BLACK, 16, 0);
         // IN RA LOI "INVALID CRC" OR "CRC FAILED" O DAY
         return false;
     }

@@ -102,39 +102,60 @@ int main(void)
   MX_I2C2_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
-  // 1. Khởi tạo LCD
-    lcd_init();
-    lcd_clear(WHITE); // Xóa màn hình thành màu trắng
 
-    // 2. Hiển thị giao diện ban đầu
-    // Cú pháp: lcd_show_string(x, y, string, màu_chữ, màu_nền, cỡ_chữ, mode)
-    lcd_show_string(10, 10, "BKIT HARDWARE TEST", RED, WHITE, 24, 0);
-
-  #if (BKIT_PHY_INTERFACE == PHY_UART)
-    lcd_show_string(10, 40, "Mode: UART (RS485)", BLUE, WHITE, 24, 0);
-  #else
-    lcd_show_string(10, 40, "Mode: I2C Slave", BLUE, WHITE, 24, 0);
-    lcd_show_string(10, 70, "Addr: Checking...", BLACK, WHITE, 16, 0);
-
-  #endif
-
-//    lcd_show_string(10, 100, "RX Data: ", BLACK, WHITE, 24, 0);
-//    lcd_show_string(10, 130, "Hex: ", BLACK, WHITE, 24, 0);
+  lcd_init();
+    lcd_clear(BLACK);
 
 
+    lcd_show_string(10, 10,  "=== IoT SLAVE ===", GREEN, BLACK, 24, 0);
+
+    //MODE
+    #if (BKIT_PHY_INTERFACE == PHY_UART)
+        lcd_show_string(10, 45,  "Link: UART (Active)", CYAN, BLACK, 16, 0);
+    #else
+        lcd_show_string(10, 45,  "Link: I2C (Active) ", CYAN, BLACK, 16, 0);
+    #endif
+
+
+    lcd_show_string(10, 100, "DEVICE TELEMETRY:", YELLOW, BLACK, 16, 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  /* Trong vòng lặp while(1) */
 	  sensor_data_t received_data;
-	  if (bkit_receive_message(&received_data)) {
-	      char buf[32];
-	      sprintf(buf, "Temp: %lu", received_data.timestamp);
-	      lcd_show_string(10, 160, buf , BLACK, WHITE, 24, 0);
-	  }
+
+
+	        if (bkit_receive_message(&received_data)) {
+	            char buf[64];
+
+
+
+	            // ID
+	            sprintf(buf, "Node ID  : %lu   ", received_data.sensor_id);
+	            lcd_show_string(20, 125, buf, WHITE, BLACK, 24, 0);
+
+	            // NHIET DO
+	            sprintf(buf, "Temp : %.2f C ", received_data.temperature);
+	            lcd_show_string(20, 155, buf, RED, BLACK, 24, 0);
+
+	            // THOI GIAN
+	            sprintf(buf, "Time : %lu ms ", received_data.timestamp);
+	            lcd_show_string(20, 185, buf, GRAY, BLACK, 16, 0);
+
+	            // Nếu có humidity:
+	            // sprintf(buf, "Humi     : %.1f %% ", received_data.humidity);
+	            // lcd_show_string(20, 215, buf, BLUE, BLACK, 24, 0);
+
+	            // EFFECT
+	            lcd_show_string(200, 10, "*", RED, BLACK, 24, 0);
+	            HAL_Delay(50);
+	            lcd_show_string(200, 10, " ", BLACK, BLACK, 24, 0);
+	        }
+	        else {
+
+	        }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

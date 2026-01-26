@@ -105,9 +105,17 @@ int main(void)
 
 
   /* USER CODE BEGIN 2 */
+  uint32_t packet_sent_count = 0;
   lcd_init();
-  lcd_clear(WHITE);
-  lcd_show_string(70, 100, "IM MASTER", YELLOW, BLACK, 24, 0);
+    lcd_clear(BLACK);
+    lcd_show_string(10, 10,  "--- IoT MASTER ---", YELLOW, BLACK, 24, 0);
+    #if (BKIT_PHY_INTERFACE == PHY_UART)
+        lcd_show_string(10, 45,  "Mode: RS485 (UART)", CYAN, BLACK, 24, 0);
+    #else
+        lcd_show_string(10, 45,  "Mode: I2C Bus", CYAN, BLACK, 16, 0);
+    #endif
+
+    lcd_show_string(10, 80,  "Data Stream:", WHITE, BLACK, 16, 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -115,12 +123,36 @@ int main(void)
   while (1)
   {
 
-	  sensor_data_t my_sensor = { .sensor_id = 1, .temperature = 25.5f, .timestamp = 12345 };
+	  // 1. Tạo dữ liệu giả lập (ID=1, Nhiệt độ tăng dần theo thời gian)
+	        sensor_data_t my_sensor;
+	        my_sensor.sensor_id = 1;
+	        my_sensor.temperature = 25.0f + (HAL_GetTick() % 100) / 10.0f; // Nhiệt độ dao động 25.0 - 35.0
+	        my_sensor.timestamp = HAL_GetTick();
 
-	  if (bkit_send_message(&my_sensor)) {
-	      lcd_show_string(10, 160, "Sent OK", BLUE, WHITE, 16, 0);
-	  }
-	  HAL_Delay(500);
+	        // Nếu em đã thêm humidity ở bước trước, hãy bỏ comment dòng dưới:
+	        // my_sensor.humidity = 60.0f;
+
+	        // 2. Gửi đi và cập nhật giao diện
+	        if (bkit_send_message(&my_sensor)) {
+	            packet_sent_count++;
+	            char buf[64];
+
+
+
+
+
+	            sprintf(buf, "Temp: %.2f C   ", my_sensor.temperature);
+	            lcd_show_string(10, 110, buf, LIGHTBLUE, BLACK, 24, 0);
+
+	            sprintf(buf, "Pkts: %lu       ", packet_sent_count);
+	            lcd_show_string(10, 140, buf, GRAY, BLACK, 16, 0);
+	        }
+	        else {
+
+
+	        }
+
+	        HAL_Delay(1000); // Gửi mỗi 1 giây
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
