@@ -28,9 +28,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "bkit_config.h"
-#include "hw_driver.h" // Layer 1 của bạn
-#include "lcd.h"       // Thư viện LCD có sẵn trong project
-#include <stdio.h>     // Dùng để format chuỗi (sprintf)
+#include "hw_driver.h"
+#include "lcd.h"
+#include <stdio.h>
+#include "bkit_app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -114,39 +115,26 @@ int main(void)
   #else
     lcd_show_string(10, 40, "Mode: I2C Slave", BLUE, WHITE, 24, 0);
     lcd_show_string(10, 70, "Addr: Checking...", BLACK, WHITE, 16, 0);
-    // Nhớ sửa địa chỉ I2C trong file .ioc hoặc i2c.c khác 0 nhé!
+
   #endif
 
-    lcd_show_string(10, 100, "RX Data: ", BLACK, WHITE, 24, 0);
-    lcd_show_string(10, 130, "Hex: ", BLACK, WHITE, 24, 0);
+//    lcd_show_string(10, 100, "RX Data: ", BLACK, WHITE, 24, 0);
+//    lcd_show_string(10, 130, "Hex: ", BLACK, WHITE, 24, 0);
 
-    uint8_t rx_data = 0;
-    char buffer_hex[20]; // Biến tạm để hiển thị mã Hex
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  // 3. Gọi Layer 1 để chờ nhận dữ liệu
-	      // Hàm này sẽ trả về 1 nếu có dữ liệu, 0 nếu không có
-	      if (hw_receive_byte(&rx_data) == 1)
-	      {
-	          // --- CÓ DỮ LIỆU ĐẾN ---
-
-	          // 4. Hiển thị ký tự nhận được (ASCII)
-	          // Vẽ đè một hình chữ nhật trắng trước để xóa ký tự cũ
-	          lcd_fill(120, 100, 160, 124, WHITE);
-	          lcd_show_char(120, 100, rx_data, RED, WHITE, 24, 0);
-
-	          // 5. Hiển thị mã Hex (để debug nếu gửi số không phải ký tự)
-	          sprintf(buffer_hex, "0x%02X", rx_data);
-	          lcd_fill(70, 130, 150, 154, WHITE); // Xóa cũ
-	          lcd_show_string(70, 130, buffer_hex, BLUE, WHITE, 24, 0);
-
-	          // (Tuỳ chọn) Nháy LED xanh trên mạch để báo hiệu thêm
-	          HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
-	      }
+	  /* Trong vòng lặp while(1) */
+	  sensor_data_t received_data;
+	  if (bkit_receive_message(&received_data)) {
+	      char buf[32];
+	      sprintf(buf, "Temp: %lu", received_data.timestamp);
+	      lcd_show_string(10, 160, buf , BLACK, WHITE, 24, 0);
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

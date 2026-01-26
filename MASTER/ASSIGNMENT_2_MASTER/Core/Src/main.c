@@ -32,6 +32,7 @@
 #include "bkit_config.h"
 #include "lcd.h"
 #include "hw_driver.h"
+#include "bkit_app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -113,12 +114,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  // Master gửi ký tự 'A', rồi 'B', ...
-	  static char send_char = 'A';
-	  hw_send_byte(send_char);
-	  send_char++;
-	  if (send_char > 'Z') send_char = 'A';
-	  HAL_Delay(500); // Gửi mỗi 0.5s
+
+	  sensor_data_t my_sensor = { .sensor_id = 1, .temperature = 25.5f, .timestamp = 12345 };
+
+	  if (bkit_send_message(&my_sensor)) {
+	      lcd_show_string(10, 160, "Sent OK", BLUE, WHITE, 16, 0);
+	  }
+	  HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -11,6 +11,7 @@
 #include "pb_encode.h"
 #include "pb_decode.h"
 #include <string.h>
+#include "lcd.h"
 
 //HAM TINH TOAN CRC 16
 uint16_t calculate_crc16(const uint8_t *data, uint16_t len) {
@@ -84,6 +85,7 @@ bool bkit_protocol_receive(SensorData *data) {
     // CRC CHECK
     if (calculate_crc16(payload, header.packet_length) != header.crc16) {
         // SAI CRC: BO QUA GOI TIN, XU LY LOI (NANG CAP SAU)
+    	lcd_show_string(10, 100, "CRC False", RED, WHITE, 24, 0);
         return false;
     }
 
