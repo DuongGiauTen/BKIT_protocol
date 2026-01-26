@@ -52,6 +52,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 ASSIGMENT_2_SLAVE.list \
 
+OBJCOPY_HEX += \
+ASSIGMENT_2_SLAVE.hex \
+
 
 # All Target
 all: main-build
@@ -60,8 +63,8 @@ all: main-build
 main-build: ASSIGMENT_2_SLAVE.elf secondary-outputs
 
 # Tool invocations
-ASSIGMENT_2_SLAVE.elf ASSIGMENT_2_SLAVE.map: $(OBJS) $(USER_OBJS) D:\BKIT_protocol\SLAVE\ASSIGMENT_2_SLAVE\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "ASSIGMENT_2_SLAVE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\BKIT_protocol\SLAVE\ASSIGMENT_2_SLAVE\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ASSIGMENT_2_SLAVE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+ASSIGMENT_2_SLAVE.elf ASSIGMENT_2_SLAVE.map: $(OBJS) $(USER_OBJS) D:\STM32_Project\BKIT_Train\Assignment_2_Design_Protocol\SLAVE\ASSIGMENT_2_SLAVE\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "ASSIGMENT_2_SLAVE.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\STM32_Project\BKIT_Train\Assignment_2_Design_Protocol\SLAVE\ASSIGMENT_2_SLAVE\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ASSIGMENT_2_SLAVE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -75,12 +78,17 @@ ASSIGMENT_2_SLAVE.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEP
 	@echo 'Finished building: $@'
 	@echo ' '
 
+ASSIGMENT_2_SLAVE.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "ASSIGMENT_2_SLAVE.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) ASSIGMENT_2_SLAVE.elf ASSIGMENT_2_SLAVE.list ASSIGMENT_2_SLAVE.map default.size.stdout
+	-$(RM) ASSIGMENT_2_SLAVE.elf ASSIGMENT_2_SLAVE.hex ASSIGMENT_2_SLAVE.list ASSIGMENT_2_SLAVE.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

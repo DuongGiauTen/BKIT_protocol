@@ -52,6 +52,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 ASSIGNMENT_2_MASTER.list \
 
+OBJCOPY_HEX += \
+ASSIGNMENT_2_MASTER.hex \
+
 
 # All Target
 all: main-build
@@ -60,8 +63,8 @@ all: main-build
 main-build: ASSIGNMENT_2_MASTER.elf secondary-outputs
 
 # Tool invocations
-ASSIGNMENT_2_MASTER.elf ASSIGNMENT_2_MASTER.map: $(OBJS) $(USER_OBJS) D:\BKIT_protocol\MASTER\ASSIGNMENT_2_MASTER\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "ASSIGNMENT_2_MASTER.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\BKIT_protocol\MASTER\ASSIGNMENT_2_MASTER\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ASSIGNMENT_2_MASTER.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+ASSIGNMENT_2_MASTER.elf ASSIGNMENT_2_MASTER.map: $(OBJS) $(USER_OBJS) D:\STM32_Project\BKIT_Train\Assignment_2_Design_Protocol\MASTER\ASSIGNMENT_2_MASTER\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "ASSIGNMENT_2_MASTER.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\STM32_Project\BKIT_Train\Assignment_2_Design_Protocol\MASTER\ASSIGNMENT_2_MASTER\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ASSIGNMENT_2_MASTER.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -75,12 +78,17 @@ ASSIGNMENT_2_MASTER.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_D
 	@echo 'Finished building: $@'
 	@echo ' '
 
+ASSIGNMENT_2_MASTER.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "ASSIGNMENT_2_MASTER.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) ASSIGNMENT_2_MASTER.elf ASSIGNMENT_2_MASTER.list ASSIGNMENT_2_MASTER.map default.size.stdout
+	-$(RM) ASSIGNMENT_2_MASTER.elf ASSIGNMENT_2_MASTER.hex ASSIGNMENT_2_MASTER.list ASSIGNMENT_2_MASTER.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
