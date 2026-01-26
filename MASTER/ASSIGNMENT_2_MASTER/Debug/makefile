@@ -60,8 +60,8 @@ all: main-build
 main-build: ASSIGNMENT_2_MASTER.elf secondary-outputs
 
 # Tool invocations
-ASSIGNMENT_2_MASTER.elf ASSIGNMENT_2_MASTER.map: $(OBJS) $(USER_OBJS) D:\STM32_Project\BKIT_Train\Assignment_2_Design_Protocol\MASTER\ASSIGNMENT_2_MASTER\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "ASSIGNMENT_2_MASTER.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\STM32_Project\BKIT_Train\Assignment_2_Design_Protocol\MASTER\ASSIGNMENT_2_MASTER\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ASSIGNMENT_2_MASTER.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+ASSIGNMENT_2_MASTER.elf ASSIGNMENT_2_MASTER.map: $(OBJS) $(USER_OBJS) D:\BKIT_protocol\MASTER\ASSIGNMENT_2_MASTER\STM32F407ZGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "ASSIGNMENT_2_MASTER.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\BKIT_protocol\MASTER\ASSIGNMENT_2_MASTER\STM32F407ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ASSIGNMENT_2_MASTER.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

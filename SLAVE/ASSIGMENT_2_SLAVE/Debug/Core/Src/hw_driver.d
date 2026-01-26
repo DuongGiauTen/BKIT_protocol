@@ -32,7 +32,8 @@ Core/Src/hw_driver.o: ../Core/Src/hw_driver.c ../Core/Inc/hw_driver.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
+ ../Core/Inc/usart.h ../Core/Inc/main.h ../Core/Inc/i2c.h
 ../Core/Inc/hw_driver.h:
 ../Core/Inc/bkit_config.h:
 ../Core/Inc/main.h:
@@ -69,3 +70,6 @@ Core/Src/hw_driver.o: ../Core/Src/hw_driver.c ../Core/Inc/hw_driver.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
+../Core/Inc/usart.h:
+../Core/Inc/main.h:
+../Core/Inc/i2c.h:

@@ -25,6 +25,8 @@
 #include "gpio.h"
 #include "fsmc.h"
 
+#include "bkit_config.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -105,6 +107,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  // Master gửi ký tự 'A', rồi 'B', ...
+	  static char send_char = 'A';
+	  hw_send_byte(send_char);
+	  send_char++;
+	  if (send_char > 'Z') send_char = 'A';
+	  HAL_Delay(500); // Gửi mỗi 0.5s
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
