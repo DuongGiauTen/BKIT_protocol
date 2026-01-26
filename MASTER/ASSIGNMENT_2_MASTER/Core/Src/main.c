@@ -123,36 +123,30 @@ int main(void)
   while (1)
   {
 
-	  // 1. Tạo dữ liệu giả lập (ID=1, Nhiệt độ tăng dần theo thời gian)
+
 	        sensor_data_t my_sensor;
 	        my_sensor.sensor_id = 1;
 	        my_sensor.temperature = 25.0f + (HAL_GetTick() % 100) / 10.0f; // Nhiệt độ dao động 25.0 - 35.0
 	        my_sensor.timestamp = HAL_GetTick();
 
-	        // Nếu em đã thêm humidity ở bước trước, hãy bỏ comment dòng dưới:
+	       // DUNG DE TEST TRUONG HOP THEM TRUONG
 	        // my_sensor.humidity = 60.0f;
 
-	        // 2. Gửi đi và cập nhật giao diện
+
 	        if (bkit_send_message(&my_sensor)) {
 	            packet_sent_count++;
 	            char buf[64];
 
-
-
-
-
 	            sprintf(buf, "Temp: %.2f C   ", my_sensor.temperature);
 	            lcd_show_string(10, 110, buf, LIGHTBLUE, BLACK, 24, 0);
 
-	            sprintf(buf, "Pkts: %lu       ", packet_sent_count);
+	            sprintf(buf, "COUNT: %lu       ", packet_sent_count);
 	            lcd_show_string(10, 140, buf, GRAY, BLACK, 16, 0);
 	        }
 	        else {
 
-
 	        }
-
-	        HAL_Delay(1000); // Gửi mỗi 1 giây
+	        HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
