@@ -1,0 +1,3 @@
+../Core/Src/bkit_protocol.c:16:10:calculate_crc16	4
+../Core/Src/bkit_protocol.c:34:6:bkit_protocol_send	4
+../Core/Src/bkit_protocol.c:64:6:bkit_protocol_receive	9

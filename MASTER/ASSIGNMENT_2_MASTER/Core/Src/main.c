@@ -25,11 +25,13 @@
 #include "gpio.h"
 #include "fsmc.h"
 
-#include "bkit_config.h"
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "bkit_config.h"
+#include "lcd.h"
+#include "hw_driver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -99,8 +101,12 @@ int main(void)
   MX_TIM2_Init();
   MX_I2C2_Init();
   MX_USART6_UART_Init();
-  /* USER CODE BEGIN 2 */
 
+
+  /* USER CODE BEGIN 2 */
+  lcd_init();
+  lcd_clear(WHITE);
+  lcd_show_string(70, 100, "IM MASTER", YELLOW, BLACK, 24, 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
