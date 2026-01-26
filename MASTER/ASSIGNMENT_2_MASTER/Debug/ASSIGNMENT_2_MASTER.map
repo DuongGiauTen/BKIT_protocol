@@ -6616,8 +6616,8 @@ LOAD D:/STM32_install/STM32cubeIDE_1.9.0/STM32CubeIDE_1.19.0/STM32CubeIDE/plugin
 .rodata         0x0800b0f0     0x3914
                 0x0800b0f0                        . = ALIGN (0x4)
  *(.rodata)
- .rodata        0x0800b0f0       0x59 ./Core/Src/main.o
- *fill*         0x0800b149        0x3 
+ .rodata        0x0800b0f0       0x5a ./Core/Src/main.o
+ *fill*         0x0800b14a        0x2 
  .rodata        0x0800b14c      0x105 ./Core/Src/pb_encode.o
  *(.rodata*)
  *fill*         0x0800b251        0x3 

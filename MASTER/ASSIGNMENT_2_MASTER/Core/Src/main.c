@@ -110,7 +110,7 @@ int main(void)
     lcd_clear(BLACK);
     lcd_show_string(10, 10,  "--- IoT MASTER ---", YELLOW, BLACK, 24, 0);
     #if (BKIT_PHY_INTERFACE == PHY_UART)
-        lcd_show_string(10, 45,  "Mode: RS485 (UART)", CYAN, BLACK, 24, 0);
+        lcd_show_string(10, 45,  "Mode: UART", CYAN, BLACK, 24, 0);
     #else
         lcd_show_string(10, 45,  "Mode: I2C Bus", CYAN, BLACK, 16, 0);
     #endif

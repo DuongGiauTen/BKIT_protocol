@@ -3334,7 +3334,7 @@ int main(void)
   while (1)
   {
 
-	  // 1. Tạo dữ liệu giả lập (ID=1, Nhiệt độ tăng dần theo thời gian)
+
 	        sensor_data_t my_sensor;
 	        my_sensor.sensor_id = 1;
  8001c2a:	2301      	movs	r3, #1
@@ -3360,10 +3360,10 @@ int main(void)
  8001c64:	4603      	mov	r3, r0
  8001c66:	64bb      	str	r3, [r7, #72]	@ 0x48
 
-	        // Nếu em đã thêm humidity ở bước trước, hãy bỏ comment dòng dưới:
+	       // DUNG DE TEST TRUONG HOP THEM TRUONG
 	        // my_sensor.humidity = 60.0f;
 
-	        // 2. Gửi đi và cập nhật giao diện
+
 	        if (bkit_send_message(&my_sensor)) {
  8001c68:	f107 0340 	add.w	r3, r7, #64	@ 0x40
  8001c6c:	4618      	mov	r0, r3
@@ -3375,10 +3375,7 @@ int main(void)
  8001c78:	6cfb      	ldr	r3, [r7, #76]	@ 0x4c
  8001c7a:	3301      	adds	r3, #1
  8001c7c:	64fb      	str	r3, [r7, #76]	@ 0x4c
-
-
-
-
+	            char buf[64];
 
 	            sprintf(buf, "Temp: %.2f C   ", my_sensor.temperature);
  8001c7e:	6c7b      	ldr	r3, [r7, #68]	@ 0x44
@@ -3402,7 +3399,7 @@ int main(void)
  8001ca6:	200a      	movs	r0, #10
  8001ca8:	f7ff fd96 	bl	80017d8 <lcd_show_string>
 
-	            sprintf(buf, "Pkts: %lu       ", packet_sent_count);
+	            sprintf(buf, "COUNT: %lu       ", packet_sent_count);
  8001cac:	463b      	mov	r3, r7
  8001cae:	6cfa      	ldr	r2, [r7, #76]	@ 0x4c
  8001cb0:	490f      	ldr	r1, [pc, #60]	@ (8001cf0 <main+0x14c>)
@@ -3420,12 +3417,11 @@ int main(void)
  8001cca:	218c      	movs	r1, #140	@ 0x8c
  8001ccc:	200a      	movs	r0, #10
  8001cce:	f7ff fd83 	bl	80017d8 <lcd_show_string>
+	        }
 	        else {
 
-
 	        }
-
-	        HAL_Delay(1000); // Gửi mỗi 1 giây
+	        HAL_Delay(1000);
  8001cd2:	f44f 707a 	mov.w	r0, #1000	@ 0x3e8
  8001cd6:	f001 ffb9 	bl	8003c4c <HAL_Delay>
   {
