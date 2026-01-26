@@ -1,0 +1,3 @@
+../Core/Src/hw_driver.c:15:6:hw_init	1
+../Core/Src/hw_driver.c:27:6:hw_send_byte	1
+../Core/Src/hw_driver.c:39:9:hw_receive_byte	1

@@ -1,0 +1,3 @@
+../Core/Src/hw_driver.c:15:6:hw_init	4	static
+../Core/Src/hw_driver.c:27:6:hw_send_byte	16	static
+../Core/Src/hw_driver.c:39:9:hw_receive_byte	16	static
