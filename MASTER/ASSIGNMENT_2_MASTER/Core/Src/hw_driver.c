@@ -12,8 +12,13 @@
 
 // KHAI BAO BIEN NGOAI VI
 extern UART_HandleTypeDef huart6; // PC6, PC7 LA USART6
-
 extern I2C_HandleTypeDef hi2c2; // PB10, PB11 LA I2C2
+
+// --- CẤU HÌNH RING BUFFER (CHỈ DÀNH CHO UART) ---
+// Vì Master I2C phải chủ động đọc, không dùng Ring Buffer thụ động được.
+#define RX_BUFFER_SIZE 256
+volatile uint8_t master_rx_buffer[RX_BUFFER_SIZE];
+volatile uint16_t rx_tail = 0;
 
 #define SLAVE_ADDR_I2C  (0x30 << 1) //CAU HINH DIA CHI SLAVE I2C : 0x30
 
@@ -26,7 +31,7 @@ void hw_init(void) {
 
 #if (BKIT_PHY_INTERFACE == PHY_UART) //
 	// [TO DO]
-   // DOAN NAY KHOI TAO UART
+	HAL_UART_Receive_DMA(&huart6, (uint8_t*)master_rx_buffer, RX_BUFFER_SIZE);
 #elif (BKIT_PHY_INTERFACE == PHY_I2C)
 	// [TO DO]
     // DOAN NAY KHOI TAO I2C
@@ -47,22 +52,36 @@ void hw_send_byte(uint8_t data) {
 #endif
 }
 
-// HAM MASTER NHAN 1 BYTE VE
+// --- 3. HÀM NHẬN 1 BYTE (RX) ---
 uint8_t hw_receive_byte(uint8_t* data) {
 #if (BKIT_PHY_INTERFACE == PHY_UART)
-    // TODO
-	if (HAL_UART_Receive(&huart6, data, 1, HW_TIMEOUT) == HAL_OK){
-		return 1;//success
-	}
-    return 0;//fail
+    // [UART MASTER] UPGRADE: Dùng Ring Buffer DMA (Non-blocking)
+
+    uint16_t rx_head = RX_BUFFER_SIZE - __HAL_DMA_GET_COUNTER(huart6.hdmarx);
+
+    if (rx_head == rx_tail) {
+        return 0; // Buffer rỗng
+    }
+
+    *data = master_rx_buffer[rx_tail];
+
+    rx_tail = (rx_tail + 1) % RX_BUFFER_SIZE;
+
+    return 1; // Thành công
 
 #elif (BKIT_PHY_INTERFACE == PHY_I2C)
-    // TODO
-    // MASTER YEU CAU DOC DU LIEU TU SLAVE
-    if (HAL_I2C_Master_Receive(&hi2c2, SLAVE_ADDR_I2C, data, 1, HW_TIMEOUT) == HAL_OK){
-    	return 1;
+    // [I2C MASTER]
+    // Không thể dùng Ring Buffer thụ động.
+
+    if (HAL_I2C_Master_Receive(&hi2c2, SLAVE_ADDR_I2C, data, 1, 10) == HAL_OK) {
+        return 1;
     }
     return 0;
 #endif
     return 0;
+}
+
+// --- 4. HÀM THỜI GIAN ---
+uint32_t hw_get_tick_ms(void) {
+    return HAL_GetTick();
 }

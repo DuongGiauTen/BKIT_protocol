@@ -1,6 +1,7 @@
 "./Core/Src/app_main.o"
 "./Core/Src/bkit_protocol.o"
 "./Core/Src/button.o"
+"./Core/Src/dma.o"
 "./Core/Src/fsmc.o"
 "./Core/Src/gpio.o"
 "./Core/Src/hw_driver.o"

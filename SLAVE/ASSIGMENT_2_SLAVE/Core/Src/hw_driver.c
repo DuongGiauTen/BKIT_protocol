@@ -13,6 +13,12 @@
 extern UART_HandleTypeDef huart6;
 extern I2C_HandleTypeDef hi2c2;
 
+// CAU HINH RING BUFFER
+#define RX_BUFFER_SIZE 256
+
+volatile uint8_t dma_rx_buffer[RX_BUFFER_SIZE];
+volatile uint16_t rx_tail = 0;
+
 #define HW_TIMEOUT 1000
 // --- CAC HAM CUA LAYER 1
 
@@ -20,10 +26,12 @@ void hw_init(void) {
 
 #if (BKIT_PHY_INTERFACE == PHY_UART)
 	// [TO DO]
-   // DOAN NAY KHOI TAO UART
+	// UART DMA Circular
+	HAL_UART_Receive_DMA(&huart6, (uint8_t*)dma_rx_buffer, RX_BUFFER_SIZE);
+
 #elif (BKIT_PHY_INTERFACE == PHY_I2C)
 	// [TO DO]
-    // DOAN NAY KHOI TAO I2C
+	HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t*)dma_rx_buffer, RX_BUFFER_SIZE);
 #endif
 }
 
@@ -41,21 +49,30 @@ void hw_send_byte(uint8_t data) {
 #endif
 }
 
+// HAM NHAN DUNG DMA
 
 uint8_t hw_receive_byte(uint8_t* data) {
+    uint16_t rx_head = 0;
+
 #if (BKIT_PHY_INTERFACE == PHY_UART)
-    // TODO
-	if (HAL_UART_Receive(&huart6, data, 1, HW_TIMEOUT) == HAL_OK){
-		return 1;
-	}
-    return 0;
+    rx_head = RX_BUFFER_SIZE - __HAL_DMA_GET_COUNTER(huart6.hdmarx);
 
 #elif (BKIT_PHY_INTERFACE == PHY_I2C)
-    // TODO
-    if (HAL_I2C_Slave_Receive(&hi2c2, data, 1, HW_TIMEOUT) == HAL_OK){
-    	return 1;
-    }
-    return 0;
+    rx_head = RX_BUFFER_SIZE - __HAL_DMA_GET_COUNTER(hi2c2.hdmarx);
 #endif
-    return 0;
+
+    // LOGIC RING BUFFER CHUNG
+    if (rx_head == rx_tail) {
+        return 0; // buffer rong, chua co du lieu moi
+    }
+
+    *data = dma_rx_buffer[rx_tail];
+    rx_tail = (rx_tail + 1) % RX_BUFFER_SIZE;
+
+    return 1; // da lay duoc 1 byte
 }
+
+uint32_t hw_get_tick_ms(void) {
+    return HAL_GetTick();
+}
+

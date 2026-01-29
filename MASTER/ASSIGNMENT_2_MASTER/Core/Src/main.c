@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "i2c.h"
 #include "spi.h"
 #include "tim.h"
@@ -25,14 +26,13 @@
 #include "gpio.h"
 #include "fsmc.h"
 
-
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "bkit_config.h"
 #include "lcd.h"
 #include "hw_driver.h"
 #include "bkit_app.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,62 +96,87 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART3_UART_Init();
   MX_FSMC_Init();
   MX_SPI1_Init();
   MX_TIM2_Init();
   MX_I2C2_Init();
   MX_USART6_UART_Init();
-
-
   /* USER CODE BEGIN 2 */
-  uint32_t packet_sent_count = 0;
-  lcd_init();
+    // 1. KHOI TAO PHAN CUNG DRIVER (QUAN TRONG)
+    // Hàm này sẽ kích hoạt DMA Circular Receive
+    hw_init();
+
+    // 2. Init LCD
+    lcd_init();
     lcd_clear(BLACK);
     lcd_show_string(10, 10,  "--- IoT MASTER ---", YELLOW, BLACK, 24, 0);
+
     #if (BKIT_PHY_INTERFACE == PHY_UART)
-        lcd_show_string(10, 45,  "Mode: UART", CYAN, BLACK, 24, 0);
+        lcd_show_string(10, 45,  "Mode: UART DMA", CYAN, BLACK, 24, 0);
     #else
-        lcd_show_string(10, 45,  "Mode: I2C Bus", CYAN, BLACK, 16, 0);
+        lcd_show_string(10, 45,  "Mode: I2C Master", CYAN, BLACK, 24, 0);
     #endif
 
-    lcd_show_string(10, 80,  "Data Stream:", WHITE, BLACK, 16, 0);
-  /* USER CODE END 2 */
+    lcd_show_string(10, 80,  "Status: Running...", WHITE, BLACK, 16, 0);
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+    // Bien quan ly thoi gian (Non-blocking)
+    uint32_t last_send_time = 0;
+    uint32_t packet_sent_count = 0;
 
+    /* USER CODE END 2 */
 
-	        sensor_data_t my_sensor;
-	        my_sensor.sensor_id = 1;
-	        my_sensor.temperature = 25.0f + (HAL_GetTick() % 100) / 10.0f; // Nhiệt độ dao động 25.0 - 35.0
-	        my_sensor.timestamp = HAL_GetTick();
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
+    while (1)
+    {
+        // --- TASK 1: GUI DU LIEU DINH KY (MOI 1000ms) ---
+        // Thay vi dung HAL_Delay(1000) lam treo he thong, ta dung HAL_GetTick()
+        if (HAL_GetTick() - last_send_time >= 1000)
+        {
+            last_send_time = HAL_GetTick();
 
-	       // DUNG DE TEST TRUONG HOP THEM TRUONG
-	        // my_sensor.humidity = 60.0f;
+            // Tao du lieu gia
+            sensor_data_t my_sensor;
+            my_sensor.sensor_id = 1;
+            my_sensor.temperature = 25.0f + (HAL_GetTick() % 100) / 10.0f;
+            my_sensor.timestamp = HAL_GetTick();
 
+            // Gui tin nhan
+            if (bkit_send_message(&my_sensor)) {
+                packet_sent_count++;
+                char buf[64];
 
-	        if (bkit_send_message(&my_sensor)) {
-	            packet_sent_count++;
-	            char buf[64];
+                // Hien thi nhiet do gui di
+                sprintf(buf, "Tx Temp: %.2f C   ", my_sensor.temperature);
+                lcd_show_string(10, 110, buf, LIGHTBLUE, BLACK, 24, 0);
 
-	            sprintf(buf, "Temp: %.2f C   ", my_sensor.temperature);
-	            lcd_show_string(10, 110, buf, LIGHTBLUE, BLACK, 24, 0);
+                // Hien thi so goi tin
+                sprintf(buf, "Sent: %lu       ", packet_sent_count);
+                lcd_show_string(10, 140, buf, GREEN, BLACK, 16, 0);
+            } else {
+                lcd_show_string(10, 140, "Sent: ERROR     ", RED, BLACK, 16, 0);
+            }
+        }
 
-	            sprintf(buf, "COUNT: %lu       ", packet_sent_count);
-	            lcd_show_string(10, 140, buf, GRAY, BLACK, 16, 0);
-	        }
-	        else {
+        // --- TASK 2: KIEM TRA PHAN HOI TU SLAVE (LIEN TUC) ---
+        // Vi Master da dung DMA Ring Buffer, ta co the check lien tuc ma khong so mat du lieu
+        sensor_data_t response_data;
+        if (bkit_receive_message(&response_data)) {
+            // Neu Slave co gui gi do ve, hien thi len LCD
+            char buf[64];
+            sprintf(buf, "Rx ID: %lu          ", response_data.sensor_id);
+            lcd_show_string(10, 170, buf, BLUE, BLACK, 16, 0);
+        }
 
-	        }
-	        HAL_Delay(1000);
+        // Vong lap nay chay tu do, khong bi Block boi HAL_Delay
+        // Giup Master xu ly duoc nhieu viec cung luc
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+    /* USER CODE END 3 */
 }
 
 /**
