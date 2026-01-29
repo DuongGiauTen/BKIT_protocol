@@ -1,3 +1,4 @@
-../Core/Src/bkit_protocol.c:17:10:calculate_crc16	24	static
-../Core/Src/bkit_protocol.c:35:6:bkit_protocol_send	128	static
-../Core/Src/bkit_protocol.c:65:6:bkit_protocol_receive	136	static
+../Core/Src/bkit_protocol.c:116:13:hw_receive_byte_wait	24	static
+../Core/Src/bkit_protocol.c:127:10:calculate_crc16	24	static
+../Core/Src/bkit_protocol.c:144:6:bkit_protocol_send	128	static
+../Core/Src/bkit_protocol.c:170:6:bkit_protocol_receive	136	static

@@ -137,10 +137,20 @@ int main(void)
         {
             last_send_time = HAL_GetTick();
 
+            static float sim_temp = 25.0f; // Biến tĩnh lưu giá trị cũ
+
+            // Tăng nhiệt độ thêm 0.5 độ mỗi lần
+            sim_temp += 0.5f;
+
+            // Nếu nóng quá (> 40 độ) thì reset về 25 cho mát
+           if (sim_temp > 40.0f) {
+        	   sim_temp = 25.0f;
+           }
+
             // Tao du lieu gia
             sensor_data_t my_sensor;
             my_sensor.sensor_id = 1;
-            my_sensor.temperature = 25.0f + (HAL_GetTick() % 100) / 10.0f;
+            my_sensor.temperature = sim_temp;
             my_sensor.timestamp = HAL_GetTick();
 
             // Gui tin nhan

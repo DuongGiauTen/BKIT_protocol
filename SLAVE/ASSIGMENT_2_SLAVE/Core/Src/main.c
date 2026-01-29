@@ -213,7 +213,65 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+extern DMA_HandleTypeDef hdma_usart6_rx; // Khai báo extern để dùng handle
+extern UART_HandleTypeDef huart6;
+extern I2C_HandleTypeDef hi2c2;
+extern volatile uint16_t rx_tail;// new
 
+// Buffer và biến nằm bên hw_driver.c, ta cần extern để truy cập
+// (Hoặc tốt nhất là include hw_driver.h và đảm bảo biến dma_rx_buffer được chia sẻ)
+// Để đơn giản test, bạn khai báo lại biến extern ở đây:
+#define RX_BUFFER_SIZE 256
+extern uint8_t dma_rx_buffer[RX_BUFFER_SIZE];
+
+// 1. XỬ LÝ LỖI UART
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+    if (huart->Instance == USART6) {
+        __HAL_UART_CLEAR_OREFLAG(huart);
+        __HAL_UART_CLEAR_NEFLAG(huart);
+        __HAL_UART_CLEAR_FEFLAG(huart);
+        __HAL_UART_CLEAR_PEFLAG(huart);
+        HAL_UART_Receive_DMA(&huart6, (uint8_t*)dma_rx_buffer, RX_BUFFER_SIZE);
+    }
+}
+
+/* --- CÁC CALLBACK QUAN TRỌNG CỦA I2C SLAVE --- */
+
+// 1. Khi Master gọi đúng tên -> BẮT ĐẦU NHẬN
+void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode) {
+    if (hi2c->Instance == I2C2) {
+        // [QUAN TRỌNG] Reset vị trí đọc về 0 vì DMA I2C luôn ghi từ đầu buffer
+        rx_tail = 0;
+
+        // Mở cửa DMA để hứng dữ liệu
+        HAL_I2C_Slave_Receive_DMA(&hi2c2, (uint8_t*)dma_rx_buffer, RX_BUFFER_SIZE);
+    }
+}
+
+// 2. Khi Master gửi xong và phát xung STOP (Hoặc Slave buffer đầy)
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C2) {
+        // Nhận xong gói này rồi. Master đã STOP.
+        // Slave quay lại trạng thái "Lắng nghe" để chờ lần gọi tên tiếp theo
+        HAL_I2C_EnableListen_IT(&hi2c2);
+    }
+}
+
+// 3. Khi có lỗi (Nhiễu, Bus Error) -> Reset về Listen
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C2) {
+        // Reset lại I2C nếu cần (Optional: __HAL_I2C_RESET_HANDLE_STATE(hi2c));
+        HAL_I2C_EnableListen_IT(&hi2c2);
+    }
+}
+
+// 4. Bắt buộc: Xử lý sự kiện Listen Complete (khi Master NACK hoặc Stop đột ngột)
+void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C2) {
+        // Đảm bảo luôn quay về trạng thái nghe
+        HAL_I2C_EnableListen_IT(&hi2c2);
+    }
+}
 /* USER CODE END 4 */
 
 /**
