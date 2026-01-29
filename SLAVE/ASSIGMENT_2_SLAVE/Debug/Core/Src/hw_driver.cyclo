@@ -1,4 +1,4 @@
-../Core/Src/hw_driver.c:132:6:hw_init	1
-../Core/Src/hw_driver.c:146:6:hw_send_byte	1
-../Core/Src/hw_driver.c:155:9:hw_receive_byte	3
-../Core/Src/hw_driver.c:188:10:hw_get_tick_ms	1
+../Core/Src/hw_driver.c:134:6:hw_init	1
+../Core/Src/hw_driver.c:148:6:hw_send_byte	1
+../Core/Src/hw_driver.c:157:9:hw_receive_byte	3
+../Core/Src/hw_driver.c:190:10:hw_get_tick_ms	1

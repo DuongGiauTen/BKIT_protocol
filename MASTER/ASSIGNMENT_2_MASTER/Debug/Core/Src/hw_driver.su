@@ -1,4 +1,4 @@
-../Core/Src/hw_driver.c:30:6:hw_init	4	static
-../Core/Src/hw_driver.c:42:6:hw_send_byte	24	static
-../Core/Src/hw_driver.c:56:9:hw_receive_byte	24	static
-../Core/Src/hw_driver.c:85:10:hw_get_tick_ms	8	static
+../Core/Src/hw_driver.c:30:6:hw_init	8	static
+../Core/Src/hw_driver.c:55:6:hw_send_byte	16	static
+../Core/Src/hw_driver.c:72:9:hw_receive_byte	24	static
+../Core/Src/hw_driver.c:101:10:hw_get_tick_ms	8	static

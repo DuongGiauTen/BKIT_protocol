@@ -39,16 +39,32 @@ void hw_init(void) {
 }
 
 // --- HÀM GỬI 1 BYTE ---
+//void hw_send_byte(uint8_t data) {
+//#if (BKIT_PHY_INTERFACE == PHY_UART)
+//	// [TO DO]
+//    // SEND BYTE CHO UART
+//	HAL_UART_Transmit(&huart6, &data, 1, HW_TIMEOUT);
+//
+//#elif (BKIT_PHY_INTERFACE == PHY_I2C)
+//	// [TO DO]
+//    //SEND BYTE CHO I2C
+//	HAL_I2C_Master_Transmit(&hi2c2, SLAVE_ADDR_I2C, &data, 1, HW_TIMEOUT);
+//#endif
+//}
+// [CODE MASTER] Sửa lại hàm hw_send_byte trong hw_driver.c
 void hw_send_byte(uint8_t data) {
 #if (BKIT_PHY_INTERFACE == PHY_UART)
-	// [TO DO]
-    // SEND BYTE CHO UART
-	HAL_UART_Transmit(&huart6, &data, 1, HW_TIMEOUT);
-
+    HAL_UART_Transmit(&huart6, &data, 1, 1000);
 #elif (BKIT_PHY_INTERFACE == PHY_I2C)
-	// [TO DO]
-    //SEND BYTE CHO I2C
-	HAL_I2C_Master_Transmit(&hi2c2, SLAVE_ADDR_I2C, &data, 1, HW_TIMEOUT);
+    // Thử gửi tối đa 10 lần nếu Slave đang bận (NACK)
+    for (int i = 0; i < 10; i++) {
+        // Timeout ngắn (10ms) để check nhanh
+        if (HAL_I2C_Master_Transmit(&hi2c2, SLAVE_ADDR_I2C, &data, 1, 10) == HAL_OK) {
+            return; // Gửi thành công, thoát ngay
+        }
+        // Nếu thất bại (Slave chưa kịp Listen), chờ 1 chút rồi thử lại
+        HAL_Delay(1);
+    }
 #endif
 }
 

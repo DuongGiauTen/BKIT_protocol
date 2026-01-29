@@ -106,6 +106,8 @@
 //}
 
 
+
+
 /*
  * hw_driver.c - PHIÊN BẢN KHẮC PHỤC LỖI DỪNG DMA (FINAL ATTEMPT)
  */
@@ -188,3 +190,4 @@ uint8_t hw_receive_byte(uint8_t* data) {
 uint32_t hw_get_tick_ms(void) {
     return HAL_GetTick();
 }
+

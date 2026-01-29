@@ -272,6 +272,7 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c) {
         HAL_I2C_EnableListen_IT(&hi2c2);
     }
 }
+
 /* USER CODE END 4 */
 
 /**
